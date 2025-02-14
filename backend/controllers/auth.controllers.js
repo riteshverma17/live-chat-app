@@ -19,7 +19,7 @@ export const signup = async (req, res) => {
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-    
+
     const salt = await bycrypt.genSalt(10);
     const hasPassword = await bycrypt.hash(password, salt);
 
@@ -35,7 +35,7 @@ export const signup = async (req, res) => {
     });
 
     if (newUser) {
-        generateTokenAndSetCookies(newUser._id, res);
+      generateTokenAndSetCookies(newUser._id, res);
       await newUser.save();
 
       res.status(201).json({
@@ -53,10 +53,37 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  res.send("Login route");
+export const login = async (req, res) => {
+  try{
+    const {username, password} = req.body;
+    const user = await User.findOne({username});
+    const isPasswordMatch = await bycrypt.compare(password, user?.password || "");
+
+    if(!user || !isPasswordMatch){
+      return res.status(400).json({message: "Invalid username or password"});
+    }
+
+    generateTokenAndSetCookies(user._id, res);
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      userName: user.userName,
+      profilePic: user.profilePic,
+    })
+
+  }catch(error){
+    console.log("Error in Login controller", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 export const logout = (req, res) => {
-  res.send("Logout route");
+  try{
+    res.cookie("jwt","", {maxAge: 0});
+    res.status(200).json({message: "Logout successfully"});
+  }catch(error){
+    console.log("Error in Logout controller", error.message);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
