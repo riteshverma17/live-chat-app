@@ -55,8 +55,8 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
   try{
-    const {username, password} = req.body;
-    const user = await User.findOne({username});
+    const {userName, password} = req.body;
+    const user = await User.findOne({userName});
     const isPasswordMatch = await bycrypt.compare(password, user?.password || "");
 
     if(!user || !isPasswordMatch){
