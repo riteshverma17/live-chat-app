@@ -11,7 +11,8 @@ const Message = ({message}) => {
   const chatClassName = formMe ? 'chat-end' : 'chat-start';
   const profilePic = formMe ? authUser.profilePic : selectedConversation?.profilePic;
   const bubbleBgColor = formMe ? "" : 'bg-red-800';
-  
+
+  const shakeClass = message.shouldShake ? "shake" : "";  
 
 
   return (
@@ -25,7 +26,7 @@ const Message = ({message}) => {
     </div>
   </div>
   
-  <div className={`chat-bubble text-white  ${bubbleBgColor}`}>{message.message}</div>
+  <div className={`chat-bubble text-white  ${bubbleBgColor} ${shakeClass}`}>{message.message}</div>
   <div className="chat-footer opacity-50 text-xs flex gap-1 items-center text-white">{formattedTime}</div>
   
 </div>
